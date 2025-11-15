@@ -52,7 +52,7 @@ async def check_drift(
                 detail=f"Model {request.model_id} not found"
             )
         
-        if not has_resource_access(current_user, model):
+        if not has_resource_access(current_user, model.created_by, model.shared_with):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You don't have access to this model"
@@ -73,7 +73,7 @@ async def check_drift(
                     detail=f"Data source {request.current_data_source_id} not found"
                 )
             
-            if not has_resource_access(current_user, data_source):
+            if not has_resource_access(current_user, data_source.created_by, data_source.shared_with):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="You don't have access to this data source"
@@ -131,13 +131,25 @@ async def check_drift(
         
         # Check for drift
         monitoring_service = DriftMonitoringService()
-        drift_report = await monitoring_service.check_drift(
-            db=db,
-            model_id=request.model_id,
-            current_data=current_data,
-            features=request.features,
-            created_by=current_user.id if current_user else None
-        )
+        try:
+            drift_report = await monitoring_service.check_drift(
+                db=db,
+                model_id=request.model_id,
+                current_data=current_data,
+                features=request.features,
+                created_by=current_user.id if current_user else None
+            )
+        except HTTPException:
+            # Re-raise HTTPException as-is (e.g., 400 for missing reference data)
+            raise
+        except ValueError as e:
+            # Convert ValueError to HTTPException with 400 status
+            if "No reference data" in str(e):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=str(e)
+                )
+            raise
         
         # Trigger retraining if needed
         if drift_report.severity.value == "high":
@@ -157,8 +169,8 @@ async def check_drift(
 @router.get("/reports/{model_id}", response_model=DriftReportListResponse)
 async def get_drift_reports(
     model_id: int,
+    skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
-    offset: int = Query(0, ge=0),
     current_user: Annotated[User, Depends(get_current_user)] = None,
     db: AsyncSession = Depends(get_db)
 ):
@@ -176,7 +188,7 @@ async def get_drift_reports(
                 detail=f"Model {model_id} not found"
             )
         
-        if not has_resource_access(current_user, model):
+        if not has_resource_access(current_user, model.created_by, model.shared_with):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You don't have access to this model"
@@ -188,7 +200,7 @@ async def get_drift_reports(
             db=db,
             model_id=model_id,
             limit=limit,
-            offset=offset
+            offset=skip
         )
         
         # Get total count
@@ -203,7 +215,7 @@ async def get_drift_reports(
             reports=[DriftReportResponse.from_orm(r) for r in reports],
             total=total,
             limit=limit,
-            offset=offset
+            offset=skip
         )
     except HTTPException:
         raise
@@ -235,7 +247,7 @@ async def get_latest_drift_report(
                 detail=f"Model {model_id} not found"
             )
         
-        if not has_resource_access(current_user, model):
+        if not has_resource_access(current_user, model.created_by, model.shared_with):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You don't have access to this model"

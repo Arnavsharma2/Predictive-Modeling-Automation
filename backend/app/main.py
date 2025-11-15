@@ -223,6 +223,8 @@ def create_app() -> FastAPI:
             "/api/v1/ml/predict": (50, 60),  # 50 requests per minute
             "/api/v1/ml/train": (50, 60),  # 50 requests per minute (increased for training operations)
             "/api/v1/ml/train/status": (300, 60),  # 300 requests per minute for status polling (5 req/sec)
+            "/api/v1/ml/models": (300, 60),  # 300 requests per minute for models listing (frontend polling)
+            "/api/v1/ml/training": (300, 60),  # 300 requests per minute for training job status polling
         }
     )
     

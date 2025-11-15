@@ -267,12 +267,29 @@ class RegressionTrainer(BaseTrainer):
                 if do_hyperparameter_tuning:
                     logger.info(f"Auto-enabling hyperparameter tuning (dataset has {n_samples:,} samples)")
         
-        # Split data
+        # Split data with stratification for regression (using quantile-based binning)
+        # This ensures train and test sets have similar target distributions
+        try:
+            # Create stratification bins based on target quantiles
+            n_bins = min(10, len(y) // 50)  # Use up to 10 bins, but ensure at least 50 samples per bin
+            if n_bins >= 2:
+                stratify_bins = pd.qcut(y, q=n_bins, labels=False, duplicates='drop')
+                logger.info(f"Using quantile-based stratification with {stratify_bins.nunique()} bins for regression")
+            else:
+                stratify_bins = None
+                logger.info("Dataset too small for stratification, using random split")
+        except (ValueError, TypeError):
+            # If quantile binning fails (e.g., too many duplicates), fall back to random split
+            stratify_bins = None
+            logger.info("Stratification not possible (target may have too many duplicates), using random split")
+
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=random_state
+            X, y, test_size=test_size, random_state=random_state, stratify=stratify_bins
         )
-        
+
         logger.info(f"Training set size: {len(X_train)}, Test set size: {len(X_test)}")
+        logger.info(f"Train target range: [{y_train.min():.2f}, {y_train.max():.2f}], mean: {y_train.mean():.2f}")
+        logger.info(f"Test target range: [{y_test.min():.2f}, {y_test.max():.2f}], mean: {y_test.mean():.2f}")
         
         # Prepare validation set for early stopping (for gradient boosting models)
         X_train_fit = X_train
@@ -283,13 +300,23 @@ class RegressionTrainer(BaseTrainer):
         
         gradient_boosting_algorithms = ["xgboost", "lightgbm", "catboost"]
         if use_early_stopping and self.algorithm in gradient_boosting_algorithms and len(X_train) > 100:
-            # Create validation set from training data (10% of training data)
+            # Create validation set from training data (10% of training data) with stratification
             val_size = 0.1
+            try:
+                # Stratify validation split for better representation
+                val_bins = min(5, len(y_train) // 20)
+                if val_bins >= 2:
+                    val_stratify = pd.qcut(y_train, q=val_bins, labels=False, duplicates='drop')
+                else:
+                    val_stratify = None
+            except (ValueError, TypeError):
+                val_stratify = None
+
             X_train_fit, X_val, y_train_fit, y_val = train_test_split(
-                X_train, y_train, test_size=val_size, random_state=random_state
+                X_train, y_train, test_size=val_size, random_state=random_state, stratify=val_stratify
             )
             eval_set = [(X_val, y_val)]
-            logger.info(f"Created validation set for early stopping: {len(X_val)} samples")
+            logger.info(f"Created stratified validation set for early stopping: {len(X_val)} samples")
         
         # Hyperparameter tuning
         if do_hyperparameter_tuning:

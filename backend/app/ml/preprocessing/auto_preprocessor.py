@@ -521,11 +521,11 @@ class AutoPreprocessor:
 
         # Apply feature engineering steps in the same order as fit()
         if self.enable_feature_engineering:
-            # Polynomial features
+            # Polynomial features - use same number of columns as in fit()
             if 'polynomial_features' in self.preprocessing_steps:
                 X = self.feature_engineer.create_polynomial_features(
                     X,
-                    self.data_characteristics['numeric_columns'][:5],
+                    self.data_characteristics['numeric_columns'][:2],  # Match fit() - use top 2
                     degree=2,
                     interaction_only=True
                 )

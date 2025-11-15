@@ -106,6 +106,13 @@ class TrainingJobListResponse(BaseModel):
     total: int
 
 
+class JobCancellationResponse(BaseModel):
+    """Schema for training job cancellation response."""
+    message: str
+    job_id: int
+    status: str
+
+
 # Prediction Schemas
 class PredictionRequest(BaseModel):
     """Schema for single prediction request."""

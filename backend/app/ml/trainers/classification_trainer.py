@@ -77,11 +77,34 @@ class ClassificationTrainer(BaseTrainer):
                 "eval_metric": "mlogloss",
                 "n_jobs": -1
             }
-            # Add num_class for multi-class if needed
+            
+            # Clean hyperparameters - remove invalid num_class values before updating
+            cleaned_hyperparameters = hyperparameters.copy() if hyperparameters else {}
+            if "num_class" in cleaned_hyperparameters:
+                num_class_value = cleaned_hyperparameters.get("num_class")
+                if num_class_value is None or num_class_value == 0 or num_class_value < 1:
+                    # Remove invalid num_class - XGBoost will infer from data
+                    cleaned_hyperparameters.pop("num_class", None)
+                    logger.warning(f"Removed invalid num_class={num_class_value} from hyperparameters. XGBoost will infer from data.")
+            
+            # Add num_class for multi-class if needed (only if n_classes is valid)
             if n_classes and n_classes > 2:
                 default_params["num_class"] = n_classes
-
-            default_params.update(hyperparameters)
+            elif n_classes == 2:
+                # Binary classification - use binary objective
+                default_params["objective"] = "binary:logistic"
+                default_params["eval_metric"] = "logloss"
+            
+            # Update with cleaned hyperparameters
+            default_params.update(cleaned_hyperparameters)
+            
+            # Final safety check - ensure num_class is never 0 or invalid
+            if "num_class" in default_params:
+                num_class_value = default_params.get("num_class")
+                if num_class_value is None or num_class_value == 0 or num_class_value < 1:
+                    default_params.pop("num_class", None)
+                    logger.warning(f"Removed invalid num_class={num_class_value} from final parameters. XGBoost will infer from data.")
+            
             return XGBClassifier(**default_params)
 
         elif self.algorithm == "lightgbm":

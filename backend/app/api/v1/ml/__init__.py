@@ -321,7 +321,7 @@ async def get_drift_reports_by_model_id(
                 detail=f"Model {model_id} not found"
             )
         
-        if not has_resource_access(current_user, model):
+        if not has_resource_access(current_user, model.created_by, model.shared_with):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You don't have access to this model"
@@ -380,7 +380,7 @@ async def get_latest_drift_report_by_model_id(
                 detail=f"Model {model_id} not found"
             )
         
-        if not has_resource_access(current_user, model):
+        if not has_resource_access(current_user, model.created_by, model.shared_with):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You don't have access to this model"
@@ -511,7 +511,7 @@ async def delete_model(
         )
     
     # Check user has access to this model
-    if not has_resource_access(current_user, model):
+    if not has_resource_access(current_user, model.created_by, model.shared_with):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have access to this model"

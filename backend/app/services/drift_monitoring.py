@@ -79,7 +79,7 @@ class DriftMonitoringService:
                 reference_data = await self._get_reference_data(db, model)
             
             if reference_data is None or len(reference_data) == 0:
-                raise ValueError("No reference data available for drift detection")
+                raise ValueError("No reference data available for drift detection. Please ensure the model has training data or provide reference data.")
             
             # Apply preprocessing to both reference and current data if preprocessor is available
             if preprocessor is not None:
