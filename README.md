@@ -4,6 +4,30 @@ This website implementation has limited functionality due to hosting costs. Full
 
 Next.js and FastAPI web application that provides automated machine learning model training, deployment, and monitoring with real-time predictions and explainability features.
 
+## Screenshots
+
+![Dashboard Overview](Screenshot%202025-11-15%20at%202.38.48%20AM.png)
+
+![Data Ingestion](Screenshot%202025-11-15%20at%202.38.34%20AM.png)
+
+![Model Training](Screenshot%202025-11-15%20at%202.38.10%20AM.png)
+
+![Model Management](Screenshot%202025-11-15%20at%202.37.49%20AM.png)
+
+![Predictions](Screenshot%202025-11-15%20at%202.37.28%20AM.png)
+
+![Explainability](Screenshot%202025-11-15%20at%202.37.16%20AM.png)
+
+![Experiments](Screenshot%202025-11-15%20at%202.36.59%20AM.png)
+
+![Drift Monitoring](Screenshot%202025-11-15%20at%202.36.44%20AM.png)
+
+![Data Quality](Screenshot%202025-11-15%20at%202.36.18%20AM.png)
+
+![Settings](Screenshot%202025-11-15%20at%202.35.47%20AM.png)
+
+![Additional View](Screenshot%202025-11-15%20at%202.34.42%20AM.png)
+
 ## What It Does
 
 **Automated ML Pipeline**: End-to-end machine learning workflow from data ingestion to model deployment
