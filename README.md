@@ -6,27 +6,27 @@ Next.js and FastAPI web application that provides automated machine learning mod
 
 ## Screenshots
 
-![Dashboard Overview](images/Screenshot%202025-11-15%20at%202.38.48%20AM.png)
+![Dashboard Overview](images/dashboard.png)
 
-![Data Ingestion](images/Screenshot%202025-11-15%20at%202.38.34%20AM.png)
+![Data Ingestion](images/data-ingestion.png)
 
-![Model Training](images/Screenshot%202025-11-15%20at%202.38.10%20AM.png)
+![Model Training](images/model-training.png)
 
-![Model Management](images/Screenshot%202025-11-15%20at%202.37.49%20AM.png)
+![Model Management](images/model-management.png)
 
-![Predictions](images/Screenshot%202025-11-15%20at%202.37.28%20AM.png)
+![Predictions](images/predictions.png)
 
-![Explainability](images/Screenshot%202025-11-15%20at%202.37.16%20AM.png)
+![Explainability](images/explainability.png)
 
-![Experiments](images/Screenshot%202025-11-15%20at%202.36.59%20AM.png)
+![Experiments](images/experiments.png)
 
-![Drift Monitoring](images/Screenshot%202025-11-15%20at%202.36.44%20AM.png)
+![Drift Monitoring](images/drift-monitoring.png)
 
-![Data Quality](images/Screenshot%202025-11-15%20at%202.36.18%20AM.png)
+![Data Quality](images/data-quality.png)
 
-![Settings](images/Screenshot%202025-11-15%20at%202.35.47%20AM.png)
+![Settings](images/settings.png)
 
-![Additional View](images/Screenshot%202025-11-15%20at%202.34.42%20AM.png)
+![Additional View](images/additional-view.png)
 
 ## What It Does
 
