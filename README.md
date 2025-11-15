@@ -6,27 +6,27 @@ Next.js and FastAPI web application that provides automated machine learning mod
 
 ## Screenshots
 
-<img src="Screenshot%202025-11-15%20at%202.38.48%20AM.png" alt="Dashboard Overview" width="800"/>
+![Dashboard Overview](images/Screenshot%202025-11-15%20at%202.38.48%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.38.34%20AM.png" alt="Data Ingestion" width="800"/>
+![Data Ingestion](images/Screenshot%202025-11-15%20at%202.38.34%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.38.10%20AM.png" alt="Model Training" width="800"/>
+![Model Training](images/Screenshot%202025-11-15%20at%202.38.10%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.37.49%20AM.png" alt="Model Management" width="800"/>
+![Model Management](images/Screenshot%202025-11-15%20at%202.37.49%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.37.28%20AM.png" alt="Predictions" width="800"/>
+![Predictions](images/Screenshot%202025-11-15%20at%202.37.28%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.37.16%20AM.png" alt="Explainability" width="800"/>
+![Explainability](images/Screenshot%202025-11-15%20at%202.37.16%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.36.59%20AM.png" alt="Experiments" width="800"/>
+![Experiments](images/Screenshot%202025-11-15%20at%202.36.59%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.36.44%20AM.png" alt="Drift Monitoring" width="800"/>
+![Drift Monitoring](images/Screenshot%202025-11-15%20at%202.36.44%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.36.18%20AM.png" alt="Data Quality" width="800"/>
+![Data Quality](images/Screenshot%202025-11-15%20at%202.36.18%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.35.47%20AM.png" alt="Settings" width="800"/>
+![Settings](images/Screenshot%202025-11-15%20at%202.35.47%20AM.png)
 
-<img src="Screenshot%202025-11-15%20at%202.34.42%20AM.png" alt="Additional View" width="800"/>
+![Additional View](images/Screenshot%202025-11-15%20at%202.34.42%20AM.png)
 
 ## What It Does
 
