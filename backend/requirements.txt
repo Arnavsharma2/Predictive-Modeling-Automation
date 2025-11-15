@@ -1,0 +1,77 @@
+# FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg[binary,pool]==3.1.18
+psycopg2-binary==2.9.9  # For Alembic migrations (synchronous)
+asyncpg==0.29.0
+
+# Data processing
+pandas==2.1.3
+numpy==1.26.2
+
+# ML Framework
+scikit-learn==1.3.2
+xgboost==2.0.3
+joblib==1.3.2
+scipy>=1.11.0
+optuna>=3.0.0  # For Bayesian hyperparameter optimization
+imbalanced-learn>=0.11.0  # For SMOTE and imbalanced data handling
+lightgbm>=4.0.0  # LightGBM gradient boosting
+catboost>=1.2.0  # CatBoost gradient boosting
+
+# Cloud storage
+boto3==1.29.7
+azure-storage-blob==12.19.0
+
+# Workflow orchestration
+prefect==2.14.11
+griffe<1.0.0  # Pin to compatible version for Prefect 2.14.11
+
+# Caching
+redis==5.0.1
+hiredis==2.2.3
+
+# Configuration and validation
+pydantic==2.5.2
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# Utilities
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt<4.0.0  # Pin bcrypt to 3.x for passlib compatibility (4.0.0+ removed __about__ module)
+python-dateutil==2.8.2
+aiohttp>=3.9.0
+aiofiles==23.2.1
+
+# Web scraping
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# Monitoring and observability
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-fastapi==0.42b0
+sentry-sdk[fastapi]==1.38.0
+
+# Explainability
+shap>=0.43.0
+lime>=0.2.0
+
+# Experiment tracking
+mlflow>=2.8.0
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+black==23.11.0
+ruff==0.1.6
+
+celery[redis]>=5.3.0

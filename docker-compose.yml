@@ -1,0 +1,200 @@
+services:
+  # PostgreSQL with TimescaleDB
+  db:
+    image: timescale/timescaledb:latest-pg15
+    container_name: analytics_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: analytics_db
+    command: postgres -c max_connections=200
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/init-prefect-db.sql:/docker-entrypoint-initdb.d/init-prefect-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - analytics_network
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: analytics_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - analytics_network
+
+  # Prefect for orchestration
+  prefect:
+    image: prefecthq/prefect:2.14.11-python3.11
+    container_name: analytics_prefect
+    command: >
+      sh -c "
+        pip install -q asyncpg &&
+        python /app/create_prefect_db.py &&
+        prefect server start --host 0.0.0.0
+      "
+    ports:
+      - "4200:4200"
+    environment:
+      PREFECT_API_URL: http://prefect:4200/api
+      # Configure Prefect to use PostgreSQL instead of SQLite
+      PREFECT_API_DATABASE_CONNECTION_URL: postgresql+asyncpg://postgres:postgres@db:5432/prefect_db
+    volumes:
+      - prefect_data:/root/.prefect
+      - ./infrastructure/docker/create_prefect_db.py:/app/create_prefect_db.py
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - analytics_network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: analytics_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/analytics_db
+      - REDIS_URL=redis://redis:6379/0
+      - PREFECT_API_URL=http://prefect:4200/api
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - ENVIRONMENT=local
+      - DEBUG=true
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=["http://localhost:3000","http://localhost:3001"]
+      - CLOUD_STORAGE_PROVIDER=s3
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-analytics-platform-models-local}
+      - SECRET_KEY=your-secret-key-here-change-in-production
+      - API_KEY_HEADER=X-API-Key
+      - ENABLE_METRICS=true
+      - ENABLE_TRACING=true
+      - GIT_PYTHON_REFRESH=quiet
+    volumes:
+      - ./backend:/app
+      - backend_data:/app/data
+      - storage_data:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_healthy
+    networks:
+      - analytics_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Celery Worker for model training
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: analytics_celery_worker
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/analytics_db
+      - REDIS_URL=redis://redis:6379/0
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - ENVIRONMENT=local
+      - LOG_LEVEL=INFO
+      - GIT_PYTHON_REFRESH=quiet
+      - PYTHONPATH=/app
+      - CELERY_WORKER=true
+      - HOSTNAME=celery_worker
+    volumes:
+      - ./backend:/app
+      - backend_data:/app/data
+      - storage_data:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_healthy
+    networks:
+      - analytics_network
+    command: celery -A app.core.celery_app worker --loglevel=info --concurrency=1 --max-tasks-per-child=1
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: analytics_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - analytics_network
+    command: npm run dev
+
+  # MLflow for experiment tracking
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.8.1
+    container_name: analytics_mlflow
+    ports:
+      - "5001:5000"  # Changed external port to 5001 to avoid conflict
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=postgresql://postgres:postgres@db:5432/mlflow_db
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+      - GUNICORN_CMD_ARGS=--timeout=300 --workers=2 --worker-class=sync
+    volumes:
+      - mlflow_data:/mlflow
+      - ./infrastructure/docker/wait_and_create_mlflow_db.py:/app/wait_and_create_mlflow_db.py
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - analytics_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: >
+      sh -c "
+        pip install -q psycopg2-binary &&
+        python /app/wait_and_create_mlflow_db.py &&
+        mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri postgresql://postgres:postgres@db:5432/mlflow_db --default-artifact-root /mlflow/artifacts
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
+  prefect_data:
+  backend_data:
+  storage_data:
+  mlflow_data:
+
+networks:
+  analytics_network:
+    driver: bridge
+

@@ -1,0 +1,31 @@
+services:
+  # Backend API service
+  - type: web
+    name: automated-predictive-modeling-api
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: LOG_FORMAT
+        value: json
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    # Auto-deploy from main branch
+    autoDeploy: true
+
+databases:
+  # PostgreSQL database
+  - name: automated-predictive-modeling-db
+    databaseName: predictive_modeling
+    user: predictive_modeling_user
+    region: oregon
+    plan: free

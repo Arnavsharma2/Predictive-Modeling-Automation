@@ -1,0 +1,373 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 30, 41, 59;
+  --background-start-rgb: 250, 252, 255;
+  --background-end-rgb: 255, 255, 255;
+}
+
+* {
+  @apply scroll-smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: visible;
+  min-height: 100vh;
+}
+
+/* Subtle grainy texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+}
+
+/* Hide all scrollbars while keeping scrolling functionality */
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+  width: 0;
+  height: 0;
+}
+
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for dashboard pages but keep scrolling functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Dashboard main content with adaptive padding */
+.dashboard-main-content {
+  padding: 1.5rem; /* 24px default */
+}
+
+@media (min-width: 1024px) {
+  .dashboard-main-content {
+    padding: 2rem; /* 32px on large screens */
+  }
+}
+
+/* Adjust padding when content is close to viewport height */
+.dashboard-main-content > div {
+  padding-bottom: clamp(1.5rem, 2vh, 2rem);
+}
+
+/* Ensure form inputs have proper text color */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  color: #1e293b;
+  background-color: #ffffff;
+}
+
+/* Pastel glass morphism effect */
+.glass {
+  background: rgba(250, 235, 215, 0.8); /* Antique white with transparency */
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(168, 213, 226, 0.3); /* Pastel blue border */
+  box-shadow: 0 8px 32px 0 rgba(168, 213, 226, 0.15);
+}
+
+.glass-strong {
+  background: rgba(250, 235, 215, 0.9); /* Antique white with more opacity */
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(168, 213, 226, 0.4); /* Pastel blue border */
+}
+
+/* Pastel text color */
+.gradient-text {
+  color: #6B8E86; /* Soft earthy teal */
+}
+
+/* Hover glow effect with pastel colors */
+.hover-glow {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(168, 213, 226, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Button animations with pastel theme - NO GRADIENTS */
+.btn-primary {
+  @apply bg-pastel-blue text-gray-soft-700 px-8 py-4 rounded-xl font-semibold transition-all duration-300;
+  @apply hover:bg-pastel-powder hover:shadow-lg;
+  @apply active:scale-95;
+  @apply border border-pastel-blue/50;
+}
+
+.btn-secondary {
+  @apply bg-pastel-white text-gray-soft-700 px-8 py-4 rounded-xl font-semibold transition-all duration-300;
+  @apply hover:bg-pastel-white/90 hover:shadow-lg;
+  @apply active:scale-95;
+  @apply border border-gray-soft-200;
+}
+
+/* Animated background with pastel colors - NO GRADIENTS */
+.animated-bg {
+  background: #FAEBD7; /* Antique white */
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Pastel color stains in background - like smudges on a shirt */
+.animated-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    /* Irregular stain shapes using ellipses and blurs */
+    radial-gradient(ellipse 400px 300px at 15% 20%, rgba(168, 213, 226, 0.25) 0%, rgba(168, 213, 226, 0.15) 30%, transparent 60%),
+    radial-gradient(ellipse 350px 450px at 85% 30%, rgba(176, 224, 230, 0.22) 0%, rgba(176, 224, 230, 0.12) 35%, transparent 65%),
+    radial-gradient(ellipse 500px 350px at 45% 60%, rgba(181, 229, 207, 0.28) 0%, rgba(181, 229, 207, 0.18) 40%, transparent 70%),
+    radial-gradient(ellipse 300px 400px at 70% 80%, rgba(200, 230, 201, 0.24) 0%, rgba(200, 230, 201, 0.14) 30%, transparent 60%),
+    radial-gradient(ellipse 450px 280px at 25% 75%, rgba(191, 239, 255, 0.20) 0%, rgba(191, 239, 255, 0.10) 35%, transparent 65%),
+    radial-gradient(ellipse 320px 380px at 90% 10%, rgba(168, 213, 226, 0.23) 0%, rgba(168, 213, 226, 0.13) 30%, transparent 60%),
+    radial-gradient(ellipse 380px 320px at 10% 50%, rgba(181, 229, 207, 0.21) 0%, rgba(181, 229, 207, 0.11) 35%, transparent 65%),
+    radial-gradient(ellipse 420px 360px at 60% 15%, rgba(200, 230, 201, 0.26) 0%, rgba(200, 230, 201, 0.16) 40%, transparent 70%),
+    radial-gradient(ellipse 360px 420px at 35% 90%, rgba(176, 224, 230, 0.22) 0%, rgba(176, 224, 230, 0.12) 30%, transparent 60%),
+    radial-gradient(ellipse 400px 300px at 80% 65%, rgba(191, 239, 255, 0.19) 0%, rgba(191, 239, 255, 0.09) 35%, transparent 65%),
+    radial-gradient(ellipse 280px 450px at 5% 35%, rgba(168, 213, 226, 0.18) 0%, rgba(168, 213, 226, 0.08) 30%, transparent 60%),
+    radial-gradient(ellipse 450px 320px at 95% 70%, rgba(181, 229, 207, 0.20) 0%, rgba(181, 229, 207, 0.10) 35%, transparent 65%);
+  background-size: 100% 100%;
+  filter: blur(40px);
+  animation: stain-drift 25s ease-in-out infinite;
+  mix-blend-mode: multiply;
+}
+
+@keyframes stain-drift {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  20% { 
+    transform: translate(1.5%, -0.8%) scale(1.01) rotate(0.5deg);
+    opacity: 0.98;
+  }
+  40% { 
+    transform: translate(-0.8%, 1.2%) scale(0.99) rotate(-0.3deg);
+    opacity: 1;
+  }
+  60% { 
+    transform: translate(0.9%, 0.7%) scale(1.005) rotate(0.2deg);
+    opacity: 0.99;
+  }
+  80% { 
+    transform: translate(-0.5%, -0.4%) scale(0.995) rotate(-0.2deg);
+    opacity: 1;
+  }
+}
+
+/* Handcrafted outline effect with pastel colors */
+.handcrafted-outline {
+  position: relative;
+}
+
+.handcrafted-outline::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(168, 213, 226, 0.4); /* Pastel blue */
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.handcrafted-outline:hover::before {
+  opacity: 1;
+  animation: outline-pulse 2s ease-in-out infinite;
+}
+
+@keyframes outline-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.02); opacity: 0.6; }
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Foggy cloud edges effect */
+.foggy-edges {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    /* Top edge fog - more prominent */
+    radial-gradient(ellipse 120% 350px at 50% 0%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(250, 235, 215, 0.5) 50%, rgba(250, 235, 215, 0.2) 70%, transparent 85%),
+    /* Bottom edge fog */
+    radial-gradient(ellipse 120% 350px at 50% 100%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(250, 235, 215, 0.5) 50%, rgba(250, 235, 215, 0.2) 70%, transparent 85%),
+    /* Left edge fog */
+    radial-gradient(ellipse 350px 120% at 0% 50%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(250, 235, 215, 0.5) 50%, rgba(250, 235, 215, 0.2) 70%, transparent 85%),
+    /* Right edge fog */
+    radial-gradient(ellipse 350px 120% at 100% 50%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(250, 235, 215, 0.5) 50%, rgba(250, 235, 215, 0.2) 70%, transparent 85%),
+    /* Corner fogs - top left */
+    radial-gradient(ellipse 450px 450px at 0% 0%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 40%, rgba(250, 235, 215, 0.4) 60%, rgba(250, 235, 215, 0.15) 80%, transparent 95%),
+    /* Corner fogs - top right */
+    radial-gradient(ellipse 450px 450px at 100% 0%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 40%, rgba(250, 235, 215, 0.4) 60%, rgba(250, 235, 215, 0.15) 80%, transparent 95%),
+    /* Corner fogs - bottom left */
+    radial-gradient(ellipse 450px 450px at 0% 100%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 40%, rgba(250, 235, 215, 0.4) 60%, rgba(250, 235, 215, 0.15) 80%, transparent 95%),
+    /* Corner fogs - bottom right */
+    radial-gradient(ellipse 450px 450px at 100% 100%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 40%, rgba(250, 235, 215, 0.4) 60%, rgba(250, 235, 215, 0.15) 80%, transparent 95%);
+  filter: blur(60px);
+  animation: fog-drift 15s ease-in-out infinite;
+}
+
+@keyframes fog-drift {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.95;
+    transform: scale(1.02);
+  }
+}
+
+/* Paolo Ceric-inspired geometric pattern animation */
+.geometric-spiral {
+  opacity: 0.65;
+  z-index: 1;
+}
+
+.geometric-pattern {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  animation: geometric-rotate 20s linear infinite;
+}
+
+.geometric-pattern::before,
+.geometric-pattern::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  border-radius: 50%;
+}
+
+.geometric-pattern::before {
+  width: 450px;
+  height: 450px;
+  transform: translate(-50%, -50%);
+  border: 5px solid rgba(168, 213, 226, 0.7);
+  border-top-color: rgba(181, 229, 207, 0.9);
+  border-right-color: rgba(200, 230, 201, 0.9);
+  border-bottom-color: rgba(176, 224, 230, 0.9);
+  border-left-color: rgba(191, 239, 255, 0.9);
+  animation: geometric-spin 8s linear infinite;
+}
+
+.geometric-pattern::after {
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -50%);
+  border: 4px solid rgba(181, 229, 207, 0.7);
+  border-top-color: rgba(168, 213, 226, 0.9);
+  border-right-color: rgba(200, 230, 201, 0.9);
+  border-bottom-color: rgba(191, 239, 255, 0.9);
+  border-left-color: rgba(176, 224, 230, 0.9);
+  animation: geometric-spin-reverse 6s linear infinite;
+}
+
+@keyframes geometric-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes geometric-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes geometric-spin-reverse {
+  0% { transform: translate(-50%, -50%) rotate(360deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* Text reveal animation */
+.text-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: textReveal 0.8s ease-out forwards;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+@keyframes textReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
