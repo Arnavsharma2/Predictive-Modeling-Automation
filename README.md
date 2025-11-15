@@ -1,5 +1,7 @@
 # Automated Predictive Modeling Platform
 
+PLEASE ALLOW 30-45 SECONDS FOR THE BACKEND TO START UP WHEN VISITING THE WEBSITE. This is because backend is hosted on free tier of Render.
+
 This website implementation has limited functionality due to hosting costs. Full features require monthly hosting fees for multiple background services (Redis, Celery workers, MLflow, etc.) that are not currently deployed. Basic authentication and API endpoints work, but intensive features like model training, real-time updates, experiment tracking, and batch processing are unavailable without these paid services.
 
 Next.js and FastAPI web application that provides automated machine learning model training, deployment, and monitoring with real-time predictions and explainability features.
