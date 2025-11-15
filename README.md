@@ -6,27 +6,27 @@ Next.js and FastAPI web application that provides automated machine learning mod
 
 ## Screenshots
 
-<img src="Screenshot 2025-11-15 at 2.38.48 AM.png" alt="Dashboard Overview" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.38.48%20AM.png" alt="Dashboard Overview" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.38.34 AM.png" alt="Data Ingestion" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.38.34%20AM.png" alt="Data Ingestion" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.38.10 AM.png" alt="Model Training" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.38.10%20AM.png" alt="Model Training" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.37.49 AM.png" alt="Model Management" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.37.49%20AM.png" alt="Model Management" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.37.28 AM.png" alt="Predictions" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.37.28%20AM.png" alt="Predictions" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.37.16 AM.png" alt="Explainability" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.37.16%20AM.png" alt="Explainability" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.36.59 AM.png" alt="Experiments" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.36.59%20AM.png" alt="Experiments" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.36.44 AM.png" alt="Drift Monitoring" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.36.44%20AM.png" alt="Drift Monitoring" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.36.18 AM.png" alt="Data Quality" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.36.18%20AM.png" alt="Data Quality" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.35.47 AM.png" alt="Settings" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.35.47%20AM.png" alt="Settings" width="800"/>
 
-<img src="Screenshot 2025-11-15 at 2.34.42 AM.png" alt="Additional View" width="800"/>
+<img src="Screenshot%202025-11-15%20at%202.34.42%20AM.png" alt="Additional View" width="800"/>
 
 ## What It Does
 
