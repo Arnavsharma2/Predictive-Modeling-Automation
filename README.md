@@ -6,27 +6,27 @@ Next.js and FastAPI web application that provides automated machine learning mod
 
 ## Screenshots
 
-![Dashboard Overview](images/dashboard.png)
-
-![Data Ingestion](images/data-ingestion.png)
-
-![Model Training](images/model-training.png)
-
-![Model Management](images/model-management.png)
-
-![Predictions](images/predictions.png)
-
-![Explainability](images/explainability.png)
-
-![Experiments](images/experiments.png)
-
-![Drift Monitoring](images/drift-monitoring.png)
-
-![Data Quality](images/data-quality.png)
+![Additional View](images/additional-view.png)
 
 ![Settings](images/settings.png)
 
-![Additional View](images/additional-view.png)
+![Data Quality](images/data-quality.png)
+
+![Drift Monitoring](images/drift-monitoring.png)
+
+![Experiments](images/experiments.png)
+
+![Explainability](images/explainability.png)
+
+![Predictions](images/predictions.png)
+
+![Model Management](images/model-management.png)
+
+![Model Training](images/model-training.png)
+
+![Data Ingestion](images/data-ingestion.png)
+
+![Dashboard Overview](images/dashboard.png)
 
 ## What It Does
 
