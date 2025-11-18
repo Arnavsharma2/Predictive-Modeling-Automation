@@ -121,7 +121,7 @@ class AutoPreprocessor:
                         # Try to convert to datetime
                         pd.to_datetime(X[col].dropna().head(100), errors='raise')
                         is_datetime = True
-                    except:
+                    except (ValueError, TypeError, pd.errors.ParserError):
                         pass
             
             if is_datetime:
@@ -149,7 +149,7 @@ class AutoPreprocessor:
                         numeric_as_string = True
                         characteristics['numeric_columns'].append(col)
                         continue
-                except:
+                except (ValueError, TypeError):
                     pass
                 
                 # Analyze text characteristics

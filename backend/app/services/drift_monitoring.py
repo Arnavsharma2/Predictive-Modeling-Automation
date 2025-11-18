@@ -107,13 +107,13 @@ class DriftMonitoringService:
                 for col in reference_data.columns:
                     try:
                         reference_data[col] = pd.to_numeric(reference_data[col], errors='ignore')
-                    except:
+                    except (ValueError, TypeError):
                         pass  # Keep as string/object for categorical columns
-                
+
                 for col in current_data.columns:
                     try:
                         current_data[col] = pd.to_numeric(current_data[col], errors='ignore')
-                    except:
+                    except (ValueError, TypeError):
                         pass  # Keep as string/object for categorical columns
                 
                 # Apply preprocessing transformation
@@ -126,7 +126,7 @@ class DriftMonitoringService:
                     if hasattr(preprocessor, 'get_feature_names_out'):
                         try:
                             feature_names = list(preprocessor.get_feature_names_out())
-                        except:
+                        except (AttributeError, TypeError):
                             pass
                     elif hasattr(preprocessor, 'get_feature_names'):
                         try:
@@ -135,7 +135,7 @@ class DriftMonitoringService:
                                 feature_names = feature_names()
                             if not isinstance(feature_names, list):
                                 feature_names = list(feature_names) if feature_names else None
-                        except:
+                        except (AttributeError, TypeError):
                             pass
                     elif hasattr(preprocessor, 'feature_names') and preprocessor.feature_names:
                         feature_names = preprocessor.feature_names

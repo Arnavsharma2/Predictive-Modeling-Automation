@@ -218,7 +218,7 @@ async def websocket_training_endpoint(
         try:
             if subscription_key:
                 await manager.disconnect(websocket, subscription_key)
-        except:
+        except Exception:
             pass
 
 
@@ -324,7 +324,7 @@ async def websocket_predictions_endpoint(
         try:
             if subscription_key:
                 await manager.disconnect(websocket, subscription_key)
-        except:
+        except Exception:
             pass
 
 
@@ -414,5 +414,5 @@ async def websocket_dashboard_endpoint(
         try:
             if subscription_key:
                 await manager.disconnect(websocket, subscription_key)
-        except:
+        except Exception:
             pass

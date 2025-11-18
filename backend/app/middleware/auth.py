@@ -1,7 +1,7 @@
 """
 Authentication middleware and dependencies for FastAPI.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Annotated, Optional
 from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -116,11 +116,11 @@ async def get_current_user_from_api_key(
         return None
 
     # Check expiration
-    if db_api_key.expires_at and db_api_key.expires_at < datetime.utcnow():
+    if db_api_key.expires_at and db_api_key.expires_at < datetime.now(timezone.utc):
         return None
 
     # Update last used timestamp
-    db_api_key.last_used_at = datetime.utcnow()
+    db_api_key.last_used_at = datetime.now(timezone.utc)
     await db.flush()  # Flush changes without committing
 
     # Get user

@@ -5,6 +5,7 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
+from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
 from app.core.logging import get_logger
@@ -70,19 +71,21 @@ async def list_registry(
     total_result = await db.execute(count_query)
     total = total_result.scalar()
     
-    # Get models
+    # Get models with eager loading to avoid N+1 queries
+    query = query.options(selectinload(MLModel.versions))
     query = query.order_by(MLModel.created_at.desc()).offset(skip).limit(limit)
     result = await db.execute(query)
     models = result.scalars().all()
-    
+
     # Build registry responses
     registry_entries = []
     for model in models:
-        # Get active version
-        active_version = await VersionManager.get_active_version(db, model.id)
-        
-        # Get total versions count
-        all_versions = await VersionManager.get_versions_by_model(db, model.id, include_archived=False)
+        # Filter versions in Python to avoid additional queries
+        non_archived_versions = [v for v in model.versions if not v.is_archived]
+        active_version = next((v for v in non_archived_versions if v.is_active), None)
+
+        # Use pre-loaded versions instead of querying again
+        all_versions = non_archived_versions
         
         # Get tags from active version or model
         tags = []

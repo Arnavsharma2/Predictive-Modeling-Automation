@@ -2,7 +2,7 @@
 Model version management utilities.
 """
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, and_
 from sqlalchemy.orm import selectinload
@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from app.models.database.ml_models import MLModel
 from app.models.database.model_versions import ModelVersion
 from app.core.logging import get_logger
+from app.cache.cache_decorators import cached, invalidate_cache
 
 logger = get_logger(__name__)
 
@@ -75,7 +76,7 @@ class VersionManager:
             feature_importance=feature_importance,
             dataset_size=dataset_size,
             training_duration_seconds=training_duration_seconds,
-            training_date=datetime.utcnow(),
+            training_date=datetime.now(timezone.utc),
             is_active=make_active,
             notes=notes,
             tags=tags or []
@@ -84,7 +85,11 @@ class VersionManager:
         db.add(model_version)
         await db.commit()
         await db.refresh(model_version)
-        
+
+        # Invalidate caches for this model
+        await invalidate_cache(f"model_versions:*:model_id={model_id}*")
+        await invalidate_cache(f"active_version:*:model_id={model_id}*")
+
         logger.info(f"Created model version {version} for model {model_id}")
         return model_version
     
@@ -94,35 +99,37 @@ class VersionManager:
         return await db.get(ModelVersion, version_id)
     
     @staticmethod
+    @cached(ttl=3600, key_prefix="model_versions", exclude_args=["db"])
     async def get_versions_by_model(
         db: AsyncSession,
         model_id: int,
         include_archived: bool = False
     ) -> List[ModelVersion]:
-        """Get all versions for a model."""
+        """Get all versions for a model (cached for 1 hour)."""
         query = select(ModelVersion).where(ModelVersion.model_id == model_id)
-        
+
         if not include_archived:
             query = query.where(ModelVersion.is_archived == False)
-        
+
         query = query.order_by(ModelVersion.created_at.desc())
-        
+
         result = await db.execute(query)
         return list(result.scalars().all())
     
     @staticmethod
+    @cached(ttl=7200, key_prefix="active_version", exclude_args=["db"])
     async def get_active_version(
         db: AsyncSession,
         model_id: int
     ) -> Optional[ModelVersion]:
-        """Get the active version for a model."""
+        """Get the active version for a model (cached for 2 hours)."""
         query = select(ModelVersion).where(
             and_(
                 ModelVersion.model_id == model_id,
                 ModelVersion.is_active == True
             )
         )
-        
+
         result = await db.execute(query)
         return result.scalar_one_or_none()
     
@@ -163,7 +170,11 @@ class VersionManager:
         version.is_active = True
         await db.commit()
         await db.refresh(version)
-        
+
+        # Invalidate caches for this model
+        await invalidate_cache(f"model_versions:*:model_id={version.model_id}*")
+        await invalidate_cache(f"active_version:*:model_id={version.model_id}*")
+
         logger.info(f"Activated version {version.version} for model {version.model_id}")
         return version
     

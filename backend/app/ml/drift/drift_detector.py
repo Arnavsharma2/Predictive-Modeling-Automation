@@ -4,7 +4,7 @@ Drift detection service.
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Optional, Tuple, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from app.ml.drift.statistical_tests import StatisticalTests
 from app.core.logging import get_logger
 
@@ -88,7 +88,7 @@ class DriftDetector:
                 "drift_detected": drift_detected,
                 "drift_severity": drift_severity,
                 "feature_results": feature_results,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "reference_samples": len(reference_data),
                 "current_samples": len(current_data),
                 "features_checked": len(feature_results)
@@ -243,7 +243,7 @@ class DriftDetector:
         try:
             results = {
                 "concept_drift_detected": False,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "methods": {}
             }
             

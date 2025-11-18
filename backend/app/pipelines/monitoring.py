@@ -2,7 +2,7 @@
 Model performance monitoring service.
 """
 from typing import Dict, Any, Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 
@@ -106,7 +106,7 @@ class ModelPerformanceMonitor:
         # Use get_db_session to ensure proper event loop handling in Prefect tasks
         async with get_db_session() as session:
             # Get all versions created in the last N days
-            cutoff_date = datetime.utcnow() - timedelta(days=days)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
             
             query = select(ModelVersion).where(
                 and_(

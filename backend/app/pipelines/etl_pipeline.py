@@ -2,7 +2,7 @@
 ETL pipeline using Prefect.
 """
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from prefect import flow, get_run_logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -73,7 +73,7 @@ async def etl_pipeline(
                 # Update job status to RUNNING if it was in a failed/pending state
                 if job.status != ETLJobStatus.RUNNING:
                     job.status = ETLJobStatus.RUNNING
-                    job.started_at = datetime.utcnow()
+                    job.started_at = datetime.now(timezone.utc)
                     job.error_message = None
                     await session.commit()
             else:
@@ -82,7 +82,7 @@ async def etl_pipeline(
                     source_id=source_id,
                     status=ETLJobStatus.RUNNING,
                     prefect_flow_run_id=prefect_flow_run_id,
-                    started_at=datetime.utcnow(),
+                    started_at=datetime.now(timezone.utc),
                     metadata={"etl_config": etl_config}
                 )
                 session.add(job)

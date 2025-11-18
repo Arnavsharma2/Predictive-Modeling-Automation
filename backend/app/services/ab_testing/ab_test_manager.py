@@ -2,7 +2,7 @@
 A/B test management service.
 """
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
 
@@ -100,7 +100,7 @@ class ABTestManager:
             raise ValueError(f"A/B test {test_id} not found")
         
         test.status = ABTestStatus.RUNNING
-        test.start_date = datetime.utcnow()
+        test.start_date = datetime.now(timezone.utc)
         
         await db.commit()
         await db.refresh(test)
@@ -128,7 +128,7 @@ class ABTestManager:
             raise ValueError(f"A/B test {test_id} not found")
         
         test.status = ABTestStatus.COMPLETED
-        test.end_date = datetime.utcnow()
+        test.end_date = datetime.now(timezone.utc)
         
         # Calculate results
         await ABTestManager._calculate_results(db, test)

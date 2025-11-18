@@ -482,7 +482,7 @@ class FeatureEngineer:
             try:
                 discretizer = KBinsDiscretizer(n_bins=n_bins, encode='ordinal', strategy=strategy)
                 df[f'{col}_binned'] = discretizer.fit_transform(df[[col]])
-            except:
+            except (ValueError, TypeError):
                 # Skip if binning fails (e.g., constant column)
                 continue
 
@@ -573,7 +573,7 @@ class FeatureEngineer:
             # Add distance to cluster center
             distances = kmeans.transform(X_std)
             df['cluster_distance'] = distances.min(axis=1)
-        except:
+        except (ValueError, TypeError):
             # Skip if clustering fails
             pass
 

@@ -318,7 +318,7 @@ async def _transform_features(
         for col in features_df.columns:
             try:
                 features_df[col] = pd.to_numeric(features_df[col], errors='ignore')
-            except:
+            except (ValueError, TypeError):
                 pass  # Keep as string/object for categorical columns
         
         # Apply preprocessing transformation

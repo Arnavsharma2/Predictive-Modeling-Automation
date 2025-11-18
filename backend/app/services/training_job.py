@@ -3,7 +3,7 @@ Training job management service.
 """
 import asyncio
 from typing import Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
@@ -134,7 +134,7 @@ class TrainingJobService:
         """
         update_data = {
             "status": status,
-            "updated_at": datetime.utcnow()
+            "updated_at": datetime.now(timezone.utc)
         }
 
         if progress is not None:
@@ -153,9 +153,9 @@ class TrainingJobService:
             update_data["total_epochs"] = total_epochs
 
         if status == TrainingJobStatus.RUNNING and not update_data.get("started_at"):
-            update_data["started_at"] = datetime.utcnow()
+            update_data["started_at"] = datetime.now(timezone.utc)
         elif status in [TrainingJobStatus.COMPLETED, TrainingJobStatus.FAILED]:
-            update_data["completed_at"] = datetime.utcnow()
+            update_data["completed_at"] = datetime.now(timezone.utc)
 
         await db.execute(
             update(TrainingJob).where(TrainingJob.id == job_id).values(**update_data)
@@ -177,7 +177,7 @@ class TrainingJobService:
             "total_epochs": total_epochs,
             "metrics": metrics,
             "error_message": error_message,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
 
         # Use Redis pub/sub if we're in a Celery worker (cross-process communication)
@@ -350,7 +350,7 @@ class TrainingJobService:
                     try:
                         y = pd.to_numeric(y, errors='coerce')
                         logger.info(f"Converted target column to numeric type")
-                    except:
+                    except (ValueError, TypeError):
                         pass
 
                 # Create a mask for valid data
@@ -1281,7 +1281,7 @@ class TrainingJobService:
                         model_id=model.id,
                         status=TrainingJobStatus.COMPLETED,
                         progress=100.0,
-                        completed_at=datetime.utcnow(),
+                        completed_at=datetime.now(timezone.utc),
                         metrics=test_metrics
                     )
                 )

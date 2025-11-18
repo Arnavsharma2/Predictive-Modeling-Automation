@@ -3,7 +3,7 @@ Data quality monitoring service.
 """
 import asyncio
 from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
@@ -339,7 +339,7 @@ class DataQualityService:
                 }
             
             last_update = latest_point.timestamp
-            hours_since_update = (datetime.utcnow() - last_update.replace(tzinfo=None)).total_seconds() / 3600
+            hours_since_update = (datetime.now(timezone.utc) - last_update.replace(tzinfo=None)).total_seconds() / 3600
             
             is_fresh = bool(hours_since_update <= self.quality_thresholds["timeliness"])
             

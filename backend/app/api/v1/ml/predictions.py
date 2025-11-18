@@ -2,7 +2,7 @@
 ML model prediction API endpoints.
 """
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -90,7 +90,7 @@ async def predict(
                 try:
                     # Try to convert to numeric
                     features_df[col] = pd.to_numeric(features_df[col], errors='ignore')
-                except:
+                except (ValueError, TypeError):
                     pass  # Keep as string/object for categorical columns
 
             # Apply preprocessing transformation
@@ -105,7 +105,7 @@ async def predict(
         else:
             # Legacy: No preprocessor, user must provide transformed features
             if model_record.features:
-                missing_features = [f for f in model_record.features if f in features_df.columns]
+                missing_features = [f for f in model_record.features if f not in features_df.columns]
                 if missing_features:
                     raise HTTPException(
                         status_code=status.HTTP_400_BAD_REQUEST,
@@ -150,7 +150,7 @@ async def predict(
                     "prediction": prediction_value,
                     "features": request.features,
                     "confidence": confidence,
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.now(timezone.utc).isoformat()
                 }
             )
         except Exception as e:
@@ -233,7 +233,7 @@ async def predict_batch(
                 try:
                     # Try to convert to numeric
                     features_df[col] = pd.to_numeric(features_df[col], errors='ignore')
-                except:
+                except (ValueError, TypeError):
                     pass  # Keep as string/object for categorical columns
 
             # Apply preprocessing transformation
