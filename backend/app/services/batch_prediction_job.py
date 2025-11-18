@@ -6,7 +6,7 @@ import io
 import numpy as np
 import pandas as pd
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
@@ -132,7 +132,7 @@ class BatchPredictionJobService:
         """
         update_data = {
             "status": status,
-            "updated_at": datetime.utcnow()
+            "updated_at": datetime.now(timezone.utc)
         }
         
         if progress is not None:
@@ -154,9 +154,9 @@ class BatchPredictionJobService:
             update_data["result_path"] = result_path
         
         if status == BatchJobStatus.RUNNING and not update_data.get("started_at"):
-            update_data["started_at"] = datetime.utcnow()
+            update_data["started_at"] = datetime.now(timezone.utc)
         elif status in [BatchJobStatus.COMPLETED, BatchJobStatus.FAILED]:
-            update_data["completed_at"] = datetime.utcnow()
+            update_data["completed_at"] = datetime.now(timezone.utc)
         
         await db.execute(
             update(BatchPredictionJob).where(BatchPredictionJob.id == job_id).values(**update_data)
@@ -175,7 +175,7 @@ class BatchPredictionJobService:
                 "total_records": total_records,
                 "processed_records": processed_records,
                 "failed_records": failed_records,
-                "updated_at": datetime.utcnow().isoformat()
+                "updated_at": datetime.now(timezone.utc).isoformat()
             }
         )
     
@@ -261,7 +261,7 @@ class BatchPredictionJobService:
                 # Try to read as CSV first, then JSON
                 try:
                     return pd.read_csv(io.BytesIO(file_content))
-                except:
+                except (pd.errors.ParserError, ValueError):
                     import json
                     data = json.loads(file_content.decode('utf-8'))
                     return pd.DataFrame(data)
@@ -388,7 +388,7 @@ class BatchPredictionJobService:
                         for col in batch_df.columns:
                             try:
                                 batch_df[col] = pd.to_numeric(batch_df[col], errors='ignore')
-                            except:
+                            except (ValueError, TypeError):
                                 pass  # Keep as string/object for categorical columns
                         
                         # Apply preprocessing
@@ -465,7 +465,7 @@ class BatchPredictionJobService:
             
             # Save results to cloud storage
             logger.info("Saving results to cloud storage...")
-            result_filename = f"batch_predictions_{job_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            result_filename = f"batch_predictions_{job_id}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
             
             if job.result_format == "csv":
                 result_content = results_df.to_csv(index=False).encode('utf-8')

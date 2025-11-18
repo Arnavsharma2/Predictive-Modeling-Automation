@@ -4,7 +4,7 @@ API data processor for external API integration.
 import asyncio
 import time
 from typing import Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 from app.core.logging import get_logger
@@ -170,7 +170,7 @@ class APIProcessor:
                         "metadata": {
                             "url": str(response.url),
                             "method": method,
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                             "attempt": attempt + 1
                         }
                     }

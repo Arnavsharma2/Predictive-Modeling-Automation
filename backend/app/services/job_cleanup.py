@@ -3,7 +3,7 @@ Training job cleanup and recovery service.
 
 Handles interrupted training jobs on application startup and shutdown.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 
@@ -60,7 +60,7 @@ class JobCleanupService:
                 current_time = datetime.now(timezone.utc)
             else:
                 # If naive, use utcnow
-                current_time = datetime.utcnow()
+                current_time = datetime.now(timezone.utc)
 
             time_since_update = current_time - last_update
 
@@ -86,8 +86,8 @@ class JobCleanupService:
                             f"Last status: {job.status} at {job.progress}% progress. "
                             f"The training process was likely interrupted during a system restart or crash."
                         ),
-                        completed_at=datetime.utcnow(),
-                        updated_at=datetime.utcnow()
+                        completed_at=datetime.now(timezone.utc),
+                        updated_at=datetime.now(timezone.utc)
                     )
                 )
 
@@ -103,7 +103,7 @@ class JobCleanupService:
                             "status": "FAILED",
                             "progress": job.progress,
                             "error_message": "Training interrupted during system restart",
-                            "updated_at": datetime.utcnow().isoformat()
+                            "updated_at": datetime.now(timezone.utc).isoformat()
                         }
                     )
                 except Exception as e:
@@ -130,7 +130,7 @@ class JobCleanupService:
         Returns:
             Number of jobs archived
         """
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         # Find old completed/failed jobs
         result = await db.execute(
@@ -160,7 +160,7 @@ class JobCleanupService:
             if not job.metadata:
                 job.metadata = {}
             job.metadata["archived"] = True
-            job.metadata["archived_at"] = datetime.utcnow().isoformat()
+            job.metadata["archived_at"] = datetime.now(timezone.utc).isoformat()
 
         await db.commit()
 
@@ -180,7 +180,7 @@ class JobCleanupService:
             List of potentially stuck jobs
         """
         # Find jobs that have been RUNNING for more than 2 hours without completion
-        two_hours_ago = datetime.utcnow() - timedelta(hours=2)
+        two_hours_ago = datetime.now(timezone.utc) - timedelta(hours=2)
 
         result = await db.execute(
             select(TrainingJob).where(
@@ -193,7 +193,7 @@ class JobCleanupService:
         if stuck_jobs:
             logger.warning(f"Found {len(stuck_jobs)} potentially stuck jobs:")
             for job in stuck_jobs:
-                runtime = datetime.utcnow() - job.started_at
+                runtime = datetime.now(timezone.utc) - job.started_at
                 logger.warning(
                     f"  Job {job.id}: progress={job.progress}%, "
                     f"runtime={runtime}, last_update={job.updated_at}"
@@ -234,8 +234,8 @@ class JobCleanupService:
             .values(
                 status=TrainingJobStatus.CANCELLED,
                 error_message=f"Job cancelled: {reason}",
-                completed_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                completed_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
             )
         )
         await db.commit()
@@ -252,7 +252,7 @@ class JobCleanupService:
                     "status": "CANCELLED",
                     "progress": job.progress,
                     "error_message": f"Job cancelled: {reason}",
-                    "updated_at": datetime.utcnow().isoformat()
+                    "updated_at": datetime.now(timezone.utc).isoformat()
                 }
             )
         except Exception as e:

@@ -6,7 +6,7 @@ import pickle
 from typing import Optional, Any, Dict
 from pathlib import Path
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 import io
 import asyncio
 import time
@@ -41,7 +41,7 @@ class ModelStorage:
         Returns:
             Storage path for the model
         """
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         unique_id = str(uuid.uuid4())[:8]
         filename = f"{model_name}_v{version}_{timestamp}_{unique_id}.joblib"
         return f"models/{model_name}/{filename}"
@@ -77,7 +77,7 @@ class ModelStorage:
                 "feature_names": feature_names,
                 "metadata": metadata or {},
                 "version": version,
-                "saved_at": datetime.utcnow().isoformat()
+                "saved_at": datetime.now(timezone.utc).isoformat()
             }
             
             # Serialize complete package (run in thread pool to avoid blocking event loop)
@@ -240,7 +240,7 @@ class ModelStorage:
                 "preprocessor": preprocessor,
                 "feature_names": feature_names,
                 "metadata": metadata or {},
-                "saved_at": datetime.utcnow().isoformat()
+                "saved_at": datetime.now(timezone.utc).isoformat()
             }
             
             joblib.dump(model_package, file_path)

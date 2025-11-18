@@ -79,7 +79,7 @@ class DateTimeTransformer(BaseEstimator, TransformerMixin):
             # Convert to datetime
             try:
                 dt_series = pd.to_datetime(col_data, errors='coerce')
-            except:
+            except (ValueError, TypeError, pd.errors.ParserError):
                 # If conversion fails, just pass through as numeric
                 result_dfs.append(np.array(col_data).reshape(-1, 1))
                 continue
@@ -170,7 +170,7 @@ class TextTransformer(BaseEstimator, TransformerMixin):
                 try:
                     char_vectorizer.fit(col_data)
                     self.char_ngram_vectorizers.append(char_vectorizer)
-                except:
+                except (ValueError, TypeError):
                     self.char_ngram_vectorizers.append(None)
             else:
                 self.char_ngram_vectorizers.append(None)
@@ -319,7 +319,7 @@ class DataPreprocessor:
             try:
                 pd.to_datetime(df[col].dropna().head(100), errors='coerce')
                 return True
-            except:
+            except (ValueError, TypeError, pd.errors.ParserError):
                 pass
 
         # Try to infer from data (sample first 100 rows)
@@ -330,7 +330,7 @@ class DataPreprocessor:
                 # If more than 80% successfully parsed, consider it datetime
                 if parsed.notna().sum() / len(sample) > 0.8:
                     return True
-            except:
+            except (ValueError, TypeError, pd.errors.ParserError, ZeroDivisionError):
                 pass
 
         return False

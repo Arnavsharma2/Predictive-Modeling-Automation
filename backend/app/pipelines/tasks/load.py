@@ -4,7 +4,7 @@ Load tasks for ETL pipeline.
 from typing import Dict, Any, List
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from prefect import task
@@ -112,7 +112,7 @@ async def load_to_database(
                         data_point = DataPoint(
                             source_id=source_id,
                             data=serializable_record,
-                            timestamp=datetime.utcnow()
+                            timestamp=datetime.now(timezone.utc)
                         )
                         data_points.append(data_point)
                     except Exception as e:
@@ -183,9 +183,9 @@ async def update_etl_job_status(
                 job.meta_data = convert_to_json_serializable(metadata)
             
             if status == ETLJobStatus.RUNNING and not job.started_at:
-                job.started_at = datetime.utcnow()
+                job.started_at = datetime.now(timezone.utc)
             elif status in [ETLJobStatus.COMPLETED, ETLJobStatus.FAILED, ETLJobStatus.CANCELLED]:
-                job.completed_at = datetime.utcnow()
+                job.completed_at = datetime.now(timezone.utc)
             
             await session.commit()
             logger.info(f"ETL job {job_id} status updated to {status}")

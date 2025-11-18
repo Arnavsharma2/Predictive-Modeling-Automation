@@ -2,7 +2,7 @@
 Alert service for managing alerts.
 """
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
 
@@ -358,7 +358,7 @@ class AlertService:
         
         alert.status = AlertStatus.ACKNOWLEDGED
         alert.acknowledged_by = acknowledged_by
-        alert.acknowledged_at = datetime.utcnow()
+        alert.acknowledged_at = datetime.now(timezone.utc)
         
         await db.commit()
         await db.refresh(alert)
@@ -388,7 +388,7 @@ class AlertService:
         
         alert.status = AlertStatus.RESOLVED
         alert.resolved_by = resolved_by
-        alert.resolved_at = datetime.utcnow()
+        alert.resolved_at = datetime.now(timezone.utc)
         
         await db.commit()
         await db.refresh(alert)
