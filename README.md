@@ -11,7 +11,7 @@
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/)
 [![Deployed](https://img.shields.io/badge/Deployed-Vercel%20%2B%20Render-black?style=flat-square&logo=vercel)](https://automated-predictive-modeling.vercel.app/)
 
-**[Live Demo](https://automated-predictive-modeling.vercel.app/)** &nbsp;·&nbsp; **[API Docs](https://automated-predictive-modeling.vercel.app/docs)**
+**[Live Demo](https://automated-predictive-modeling.vercel.app/)**
 
 > **Demo note:** Hosted on free-tier Render — the backend may take 30–45 seconds to cold-start. Background features (async training, WebSocket updates) require paid infrastructure (Redis + Celery workers) not provisioned in the demo environment.
 
